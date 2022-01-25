@@ -37,11 +37,11 @@ public class UIManager : MonoBehaviour
 
     public GameObject[] cardBackImages = new GameObject[36];
 
+    public int[] cardArray = new int[36];
+
     private int[] selectedCardArray = new int[3];
 
     public GameObject[] panels = new GameObject[10];
-
-    public int[] positionFlag = new int[36];
 
     public SocketIOController io;
 
@@ -68,13 +68,13 @@ public class UIManager : MonoBehaviour
     {
         AmountField.text = "10.0";
 
-        _player = new BetPlayer();
-        currentSelectedCardNum = 0;
-
         for(int i = 0; i < 36; i++)
         {
-            positionFlag[i] = 0;
+            cardArray[i] = 0;
         }
+
+        _player = new BetPlayer();
+        currentSelectedCardNum = 0;
 
         riskFlag = 0;
         //LowBtn.GetComponent<Image>().color = Color.red;
@@ -289,32 +289,42 @@ public class UIManager : MonoBehaviour
     public void ClickCardEvent(GameObject obj)
     {
         selectedCard = obj;
-        currentSelectedCardNum++;
     }
 
     public void IndexCardPosition(int posIndex)
     {
-        if (currentSelectedCardNum < 4)
+        if (currentSelectedCardNum < 3)
         {
-            selectedCardArray[currentSelectedCardNum - 1] = posIndex;
-            if (positionFlag[posIndex] == 0)
+            info_Text.text = "";
+            selectedCardArray[currentSelectedCardNum] = posIndex;
+            if (cardArray[posIndex] == 0)
             {
+                cardArray[posIndex] = 1;
                 selectedCard.GetComponent<RawImage>().color = new Color32(41, 127, 229, 255);
+                currentSelectedCardNum++;
             }
-            else if (positionFlag[posIndex] == 1)
+            else if (cardArray[posIndex] == 1)
             {
+                cardArray[posIndex] = 0;
                 currentSelectedCardNum--;
+                selectedCard.GetComponent<RawImage>().color = new Color32(255, 255, 255, 255);
             }
-
-            positionFlag[posIndex] = 1;
         }
-        else if(currentSelectedCardNum >= 4)
+        else if (currentSelectedCardNum >= 3)
         {
-            currentSelectedCardNum--;
-            info_Text.text = "Please select only 3 cards!";
+            if (cardArray[posIndex] == 1)
+            {
+                info_Text.text = "";
+                cardArray[posIndex] = 0;
+                currentSelectedCardNum--;
+                selectedCard.GetComponent<RawImage>().color = new Color32(255, 255, 255, 255);
+            }
+            else if (cardArray[posIndex] == 0)
+            {
+                info_Text.text = "Please place 3 cards before betting!";
+            }
         }
-            
-
+       
     }
 
     public void ClearTableBtnClicked()
@@ -326,7 +336,7 @@ public class UIManager : MonoBehaviour
         {
             cards[i].GetComponent<RawImage>().texture = cardImage;
             cards[i].GetComponent<RawImage>().color = new Color32(255,255,255,255);
-            positionFlag[i] = 0;
+            cardArray[i] = 0;
         }
     }
 
