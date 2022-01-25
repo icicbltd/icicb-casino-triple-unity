@@ -361,6 +361,8 @@ public class UIManager : MonoBehaviour
                 JObject.selectedCardArray = selectedCardArray;
                 io.Emit("bet info", JsonUtility.ToJson(JObject));
             }
+            else if(currentSelectedCardNum < 3)
+                info_Text.text = "Please place 3 cards before betting!";
             else if (betamount > myTotalAmount)
                 info_Text.text = "Insufficient Funds";
         }
