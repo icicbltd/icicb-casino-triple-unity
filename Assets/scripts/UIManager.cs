@@ -31,8 +31,11 @@ public class UIManager : MonoBehaviour
     public Texture[] textures = new Texture[3];
 
     public Texture cardImage;
+    public Texture cardBackImage;
 
     public GameObject[] cards = new GameObject[36];
+
+    public GameObject[] cardBackImages = new GameObject[36];
 
     private int[] selectedCardArray = new int[3];
 
@@ -140,7 +143,10 @@ public class UIManager : MonoBehaviour
     {
         for(int i = 0; i < cardPosition.Length; i++)
         {
+            cardBackImages[i].GetComponent<RawImage>().texture = null;
+            cardBackImages[i].GetComponent<RawImage>().color = new Color32(255, 255, 255, 0);
             cards[i].GetComponent<RawImage>().color = new Color32(255, 255, 255, 255);
+
             if (cardPosition[i] == 0)
                 cards[i].GetComponent<RawImage>().texture = textures[0];
             else if (cardPosition[i] == 1)
@@ -150,13 +156,14 @@ public class UIManager : MonoBehaviour
         }
         for(int i = 0; i < selectedCardArray.Length; i++)
         {
-            cards[selectedCardArray[i]].GetComponent<RawImage>().color = new Color32(5, 255, 0, 255);
+           cardBackImages[selectedCardArray[i]].GetComponent<RawImage>().texture = cardBackImage;
+           cardBackImages[selectedCardArray[i]].GetComponent<RawImage>().color = new Color32(0, 255, 107, 255);
         }
     }
 
     void SetResultPanel(int panelIndex)
     {
-        panels[panelIndex].GetComponent<Image>().color = new Color32(0,255,107,100);
+        panels[panelIndex].GetComponent<Image>().color = new Color32(0,255,107,255);
     }
 
     void SetPanelInitState()
@@ -304,7 +311,7 @@ public class UIManager : MonoBehaviour
         else if(currentSelectedCardNum >= 4)
         {
             currentSelectedCardNum--;
-            info_Text.text = "please select only 3 cards!";
+            info_Text.text = "Please select only 3 cards!";
         }
             
 
@@ -313,6 +320,7 @@ public class UIManager : MonoBehaviour
     public void ClearTableBtnClicked()
     {
         SetPanelInitState();
+        info_Text.text = "";
         currentSelectedCardNum = 0;
         for (int i = 0; i < 36; i++)
         {
@@ -344,7 +352,7 @@ public class UIManager : MonoBehaviour
                 io.Emit("bet info", JsonUtility.ToJson(JObject));
             }
             else if (betamount > myTotalAmount)
-                info_Text.text = "Not enough Funds";
+                info_Text.text = "Insufficient Funds";
         }
         else
         {
