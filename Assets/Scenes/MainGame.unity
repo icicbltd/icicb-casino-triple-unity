@@ -4692,6 +4692,13 @@ MonoBehaviour:
   - {fileID: 592809324}
   - {fileID: 1067332012}
   - {fileID: 1391735181}
+  BtnImages:
+  - {fileID: 21300000, guid: 6ac3b94ea2fb75544b92c83d895d01db, type: 3}
+  - {fileID: 21300000, guid: 080b2ae6cf4b9cc449774dee30528737, type: 3}
+  - {fileID: 21300000, guid: 46b9afbe66cd8fe45b5fe92c2939878c, type: 3}
+  - {fileID: 21300000, guid: 28c92d02ae3e5be409fc460b973a6dca, type: 3}
+  - {fileID: 21300000, guid: cdc6f5ebe7a6b9a4597781bc81f23ad9, type: 3}
+  - {fileID: 21300000, guid: c5de1ee10f303034a803125ec9623b0e, type: 3}
   io: {fileID: 454558587}
   BetBtn: {fileID: 211908334}
   AmountField: {fileID: 1117977072}

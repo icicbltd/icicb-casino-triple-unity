@@ -43,6 +43,8 @@ public class UIManager : MonoBehaviour
 
     public GameObject[] panels = new GameObject[10];
 
+    public Sprite[] BtnImages = new Sprite[6];
+
     public SocketIOController io;
 
     private int currentSelectedCardNum = 0;
@@ -54,6 +56,8 @@ public class UIManager : MonoBehaviour
     private int riskFlag = 0;
 
     private bool connectedToServer = false;
+
+    private bool canSelect = true;
 
     public TMP_InputField AmountField;
 
@@ -126,6 +130,7 @@ public class UIManager : MonoBehaviour
     {
         var res = ReceiveJsonObject.CreateFromJSON(socketIOEvent.data);
         info_Text.text = res.errMessage.ToString();
+        canSelect = true;
         BetBtn.interactable = true;
     }
 
@@ -232,9 +237,9 @@ public class UIManager : MonoBehaviour
     public void LowBtnClicked()
     {
         riskFlag = 0;
-        //LowBtn.GetComponent<Image>().color = Color.red;
-        //MediumBtn.GetComponent<Image>().color = Color.white;
-        //HighBtn.GetComponent<Image>().color = Color.white;
+        LowBtn.GetComponent<Image>().sprite = BtnImages[0];
+        MediumBtn.GetComponent<Image>().sprite = BtnImages[4];
+        HighBtn.GetComponent<Image>().sprite = BtnImages[5];
 
         firstCaseBenefit.text = "X0.50";
         secondCaseBenefit.text = "X0.80";
@@ -251,9 +256,9 @@ public class UIManager : MonoBehaviour
     public void MediumBtnClicked()
     {
         riskFlag = 1;
-        //LowBtn.GetComponent<Image>().color = Color.white;
-        //MediumBtn.GetComponent<Image>().color = Color.red;
-        //HighBtn.GetComponent<Image>().color = Color.white;
+        LowBtn.GetComponent<Image>().sprite = BtnImages[3];
+        MediumBtn.GetComponent<Image>().sprite = BtnImages[1];
+        HighBtn.GetComponent<Image>().sprite = BtnImages[5];
 
         firstCaseBenefit.text = "X0.00";
         secondCaseBenefit.text = "X0.50";
@@ -270,9 +275,9 @@ public class UIManager : MonoBehaviour
     public void HighBtnClicked()
     {
         riskFlag = 2;
-        //LowBtn.GetComponent<Image>().color = Color.white;
-        //MediumBtn.GetComponent<Image>().color = Color.white;
-        //HighBtn.GetComponent<Image>().color = Color.red;
+        LowBtn.GetComponent<Image>().sprite = BtnImages[3];
+        MediumBtn.GetComponent<Image>().sprite = BtnImages[4];
+        HighBtn.GetComponent<Image>().sprite = BtnImages[2];
 
         firstCaseBenefit.text = "X0.00";
         secondCaseBenefit.text = "X0.00";
@@ -293,38 +298,45 @@ public class UIManager : MonoBehaviour
 
     public void IndexCardPosition(int posIndex)
     {
-        if (currentSelectedCardNum < 3)
+        if (canSelect)
         {
-            info_Text.text = "";
-            selectedCardArray[currentSelectedCardNum] = posIndex;
-            if (cardArray[posIndex] == 0)
-            {
-                cardArray[posIndex] = 1;
-                selectedCard.GetComponent<RawImage>().color = new Color32(41, 127, 229, 255);
-                currentSelectedCardNum++;
-            }
-            else if (cardArray[posIndex] == 1)
-            {
-                cardArray[posIndex] = 0;
-                currentSelectedCardNum--;
-                selectedCard.GetComponent<RawImage>().color = new Color32(255, 255, 255, 255);
-            }
-        }
-        else if (currentSelectedCardNum >= 3)
-        {
-            if (cardArray[posIndex] == 1)
+            if (currentSelectedCardNum < 3)
             {
                 info_Text.text = "";
-                cardArray[posIndex] = 0;
-                currentSelectedCardNum--;
-                selectedCard.GetComponent<RawImage>().color = new Color32(255, 255, 255, 255);
+                selectedCardArray[currentSelectedCardNum] = posIndex;
+                if (cardArray[posIndex] == 0)
+                {
+                    cardArray[posIndex] = 1;
+                    selectedCard.GetComponent<RawImage>().color = new Color32(41, 127, 229, 255);
+                    currentSelectedCardNum++;
+                }
+                else if (cardArray[posIndex] == 1)
+                {
+                    cardArray[posIndex] = 0;
+                    currentSelectedCardNum--;
+                    selectedCard.GetComponent<RawImage>().color = new Color32(255, 255, 255, 255);
+                }
             }
-            else if (cardArray[posIndex] == 0)
+            else if (currentSelectedCardNum >= 3)
             {
-                info_Text.text = "Please place 3 cards before betting!";
+                if (cardArray[posIndex] == 1)
+                {
+                    info_Text.text = "";
+                    cardArray[posIndex] = 0;
+                    currentSelectedCardNum--;
+                    selectedCard.GetComponent<RawImage>().color = new Color32(255, 255, 255, 255);
+                }
+                else if (cardArray[posIndex] == 0)
+                {
+                    info_Text.text = "Please place 3 cards before betting!";
+                }
             }
         }
-       
+        else
+        {
+            canSelect = true;
+            ClearTableBtnClicked();
+        }
     }
 
     public void ClearTableBtnClicked()
@@ -359,6 +371,7 @@ public class UIManager : MonoBehaviour
                 JObject.amount = myTotalAmount;
                 JObject.riskFlag = riskFlag;
                 JObject.selectedCardArray = selectedCardArray;
+                canSelect = false;
                 io.Emit("bet info", JsonUtility.ToJson(JObject));
             }
             else if(currentSelectedCardNum < 3)
